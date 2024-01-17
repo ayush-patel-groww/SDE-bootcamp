@@ -1,21 +1,26 @@
 package com.sdebootcamp.stocks.service;
 
-import static org.hibernate.internal.util.collections.ArrayHelper.forEach;
-
 import com.sdebootcamp.stocks.dto.StocksDto;
 import com.sdebootcamp.stocks.entity.Stocks;
 import com.sdebootcamp.stocks.exceptions.StockNotFound;
 import com.sdebootcamp.stocks.mapper.StocksMapper;
-import com.sdebootcamp.stocks.mapper.UserMapper;
 import com.sdebootcamp.stocks.repository.StocksRepository;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+@Service
+@AllArgsConstructor
+@NoArgsConstructor
+@Component
 public class StocksServiceImpl implements StocksService{
   @Autowired
   private StocksRepository stocksRepository;
@@ -23,21 +28,41 @@ public class StocksServiceImpl implements StocksService{
 
 
   @Override
-  public StocksDto getStockByStockId(Long stockId) throws StockNotFound {
+  public Optional<StocksDto> getStockByStockId(Long stockId) throws StockNotFound {
      Optional<Stocks> optionalStock = stocksRepository.findById(stockId);
-     if(optionalStock.isPresent()) return stocksMapper.StocksToStocksDto(optionalStock.get());
+     if(optionalStock.isPresent()) {
+       return Optional.ofNullable(
+           stocksMapper.StocksToStocksDto(optionalStock.get()));
+     }
      throw new StockNotFound("Invalid Stock id pass"+stockId);
   }
 
   @Override
-  public void updateStocks(MultipartFile multipartFile)  {
+  public void updateStocks(MultipartFile multipartFile) {
     try{
-      List<StocksDto> stocksDtoList = StocksHelper.csvToStocksDto(multipartFile.getInputStream());
-      List<Stocks> stocksList = new ArrayList<>();
-      for(StocksDto stocksDto : stocksDtoList){
-        stocksList.add(stocksMapper.StocksDtoToStocks(stocksDto));
+
+      List<Stocks> stocksList = StocksHelper.csvToStocksDto(multipartFile.getInputStream());
+
+      for(Stocks stock : stocksList){
+
+        Long stockId = stock.getStockId();
+        Optional<Stocks> stockAlreadyPresent = stocksRepository.findById(stockId);
+        if(stockAlreadyPresent.isPresent()){
+          Stocks stockUpdate = stockAlreadyPresent.get();
+          stockUpdate.setStockName(stock.getStockName());
+          stockUpdate.setClose(stock.getClose());
+          stockUpdate.setOpen(stock.getOpen());
+          stockUpdate.setLow(stock.getLow());
+          stockUpdate.setHigh(stock.getHigh());
+          stockUpdate.setCurrentPrice(stock.getCurrentPrice());
+          stocksRepository.save(stockUpdate);
+        }
+        else{
+          stocksRepository.save(stock);
+        }
+
       }
-      stocksRepository.saveAll(stocksList);
+
     } catch (IOException e){
       throw new RuntimeException("fail to store csv data: " + e.getMessage());
     }

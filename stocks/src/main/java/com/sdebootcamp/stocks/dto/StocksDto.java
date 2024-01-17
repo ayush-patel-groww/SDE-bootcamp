@@ -14,7 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class StocksDto {
-  private Long stocksId;
+  private Long stockId;
   private String stockName;
   private double open;
   private double close;

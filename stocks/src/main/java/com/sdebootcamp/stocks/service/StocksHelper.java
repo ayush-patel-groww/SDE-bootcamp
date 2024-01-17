@@ -1,6 +1,7 @@
 package com.sdebootcamp.stocks.service;
 
 import com.sdebootcamp.stocks.dto.StocksDto;
+import com.sdebootcamp.stocks.entity.Stocks;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,18 +24,18 @@ public class StocksHelper {
     return TYPE.equals(file.getContentType());
   }
 
-  public static List<StocksDto> csvToStocksDto(InputStream is) {
+  public static List<Stocks> csvToStocksDto(InputStream is) {
     try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
         CSVParser csvParser = new CSVParser(fileReader,
             CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim());) {
 
-      List<StocksDto> stocksDtoList = new ArrayList<StocksDto>();
+      List<Stocks> stocksList = new ArrayList<Stocks>();
 
       Iterable<CSVRecord> csvRecords = csvParser.getRecords();
 
       for (CSVRecord csvRecord : csvRecords) {
-        StocksDto stocksDto = StocksDto.builder()
-            .stocksId(Long.valueOf(csvRecord.get("SC_CODE")))
+        Stocks stocks = Stocks.builder()
+            .stockId(Long.valueOf(csvRecord.get("SC_CODE")))
             .stockName(csvRecord.get("SC_NAME"))
             .open(Double.parseDouble(csvRecord.get("OPEN")))
             .close(Double.parseDouble(csvRecord.get("CLOSE")))
@@ -42,10 +43,11 @@ public class StocksHelper {
             .high(Double.parseDouble(csvRecord.get("HIGH")))
             .currentPrice(Double.parseDouble(csvRecord.get("LAST")))
             .build();
-        stocksDtoList.add(stocksDto);
+//        System.out.println(stocksDto);
+        stocksList.add(stocks);
       }
 
-      return stocksDtoList;
+      return stocksList;
     } catch (IOException e) {
       throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
     }
