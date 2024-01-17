@@ -22,7 +22,7 @@ public class PortfolioDto {
   private double buyPrice;
   private double currentPrice;
   private double gainLoss;
-  private String tradeType;
+  private boolean isBuy;
 
   private double totalPortfolioHolding;
   private double totalBuyPrice;
