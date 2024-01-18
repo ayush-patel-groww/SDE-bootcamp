@@ -9,7 +9,7 @@ import java.util.Optional;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface StocksService {
-  Optional<StocksDto> getStockByStockId(Long stockId) throws StockNotFound;
+  StocksDto getStockByStockId(Long stockId) throws StockNotFound;
   void updateStocks(MultipartFile multipartFile) throws IOException;
 
   List<StocksDto> getAllStocks();

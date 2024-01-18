@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,29 +22,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Portfolio {
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(nullable = false)
-  private Long holdingId;
-  @Column(nullable = false)
   private Long userAccountId;
-  @Column(nullable = false)
-  private Long stockId;
-  @Column(nullable = false)
-  private String stockName;
-  @Column(nullable = false)
-  private double quantity;
-  @Column(nullable = false)
-  private double buyPrice;
-  @Column(nullable = false)
-  private double currentPrice;
-  @Column(nullable = false)
-  private double gainLoss;
-  @Column(nullable = false)
-  private boolean isBuy;
-
+  private List<Holdings> holdingsList;
   private double totalPortfolioHolding;
   private double totalBuyPrice;
   private double totalProfitLoss;
   private double totalProfitLossPercentage;
-
 }

@@ -25,17 +25,8 @@ public class PortfolioServiceImpl {
 
   private final PortfolioMapper portfolioMapper = Mappers.getMapper(PortfolioMapper.class);
 
-  List<PortfolioDto> getPortfolioDetailsByUserId(Long userId){
-    List<Portfolio> portfolioList = portfolioRepository.findByUserId(userId);
-    List<PortfolioDto> portfolioDtoList = new ArrayList<>();
-    for(Portfolio portfolio : portfolioList){
-      portfolioDtoList.add(portfolioMapper.PortfolioToPortfolioDto(portfolio));
-    }
-    return portfolioDtoList;
-  }
-
-  PortfolioDto getPortfolioDetailsByUserIdAndStockId(Long userId, Long stockId){
-    return portfolioMapper.PortfolioToPortfolioDto(portfolioRepository.findByUserIdAndStockId(userId, stockId));
+  PortfolioDto getPortfolioDetailsByUserId(Long userId){
+    return portfolioMapper.PortfolioToPortfolioDto(portfolioRepository.findByUserId(userId));
   }
 
   void updatePortfolioDetails(TradesDto tradesDto){

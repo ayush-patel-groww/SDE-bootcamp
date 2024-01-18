@@ -67,8 +67,8 @@ public class StocksController {
 
   @GetMapping("{stockId}")
   ResponseEntity<StocksDto> getStockByStockId(@PathVariable Long stockId) throws StockNotFound {
-     Optional<StocksDto> optionalStocksDto = stocksService.getStockByStockId(stockId);
-    return new ResponseEntity<>(optionalStocksDto.get(), HttpStatus.OK);
+     StocksDto stocksDto = stocksService.getStockByStockId(stockId);
+    return new ResponseEntity<>(stocksDto, HttpStatus.OK);
   }
 
 }

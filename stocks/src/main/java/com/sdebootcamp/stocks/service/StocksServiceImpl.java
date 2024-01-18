@@ -28,11 +28,10 @@ public class StocksServiceImpl implements StocksService{
 
 
   @Override
-  public Optional<StocksDto> getStockByStockId(Long stockId) throws StockNotFound {
+  public StocksDto getStockByStockId(Long stockId) throws StockNotFound {
      Optional<Stocks> optionalStock = stocksRepository.findById(stockId);
      if(optionalStock.isPresent()) {
-       return Optional.ofNullable(
-           stocksMapper.StocksToStocksDto(optionalStock.get()));
+       return stocksMapper.StocksToStocksDto(optionalStock.get());
      }
      throw new StockNotFound("Invalid Stock id pass"+stockId);
   }

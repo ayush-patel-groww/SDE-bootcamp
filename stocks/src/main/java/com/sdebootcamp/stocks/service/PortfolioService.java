@@ -6,8 +6,7 @@ import java.util.List;
 
 
 public interface PortfolioService {
-   List<PortfolioDto> getPortfolioDetailsByUserId(Long userAccountId);
-   PortfolioDto getPortfolioDetailsByUserIdAndStockId(Long userAccountId, Long stockId);
+   PortfolioDto getPortfolioDetailsByUserId(Long userAccountId);
    void updatePortfolioDetails(TradesDto tradesDto);
 
 }

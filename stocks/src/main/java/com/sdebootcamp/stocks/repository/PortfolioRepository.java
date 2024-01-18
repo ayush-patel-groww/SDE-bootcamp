@@ -8,9 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface PortfolioRepository extends JpaRepository<Portfolio,Long> {
   @Query(value = "SELECT * FROM Portfolio WHERE user_id = ?1", nativeQuery = true)
-  List<Portfolio> findByUserId(Long userId);
-
-  @Query(value = "SELECT * FROM Portfolio WHERE user_id = ?1 AND stock_id = ?2", nativeQuery = true)
-  Portfolio findByUserIdAndStockId(Long userId, Long stockId);
+  Portfolio findByUserId(Long userId);
 
 }
