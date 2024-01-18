@@ -3,16 +3,9 @@ package com.sdebootcamp.stocks.controller;
 import com.sdebootcamp.stocks.dto.UsersDto;
 import com.sdebootcamp.stocks.exceptions.UserNotFound;
 import com.sdebootcamp.stocks.service.UserService;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Component
-@RequiredArgsConstructor
 @RequestMapping("/api/v1/users/")
 @RestController
 public class UserController {
@@ -50,7 +41,7 @@ public class UserController {
   }
 
   @DeleteMapping("{id}")
-  public ResponseEntity<String> deleteUser(@PathVariable("id") Long userId){
+  public ResponseEntity<String> deleteUser(@PathVariable("id") Long userId) throws UserNotFound{
     userService.deleteUser(userId);
     return new ResponseEntity<>("User successfully deleted", HttpStatus.OK);
   }

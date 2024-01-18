@@ -17,6 +17,8 @@ public class TradesDto {
   private Long userAccountId;
   private Long stockId;
   private double quantity;
+  private String stockName;
+  private double currentPrice;
   private boolean isBuy;
 
 }

@@ -18,16 +18,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-@AllArgsConstructor
-@NoArgsConstructor
-@Component
 public class StocksServiceImpl implements StocksService{
   @Autowired
   private StocksRepository stocksRepository;
-  private final StocksMapper stocksMapper = Mappers.getMapper(StocksMapper.class);
-
   @Autowired
   private HoldingsService holdingsService;
+  private final StocksMapper stocksMapper = Mappers.getMapper(StocksMapper.class);
+
 
 
   @Override
@@ -59,6 +56,7 @@ public class StocksServiceImpl implements StocksService{
           stockUpdate.setCurrentPrice(stock.getCurrentPrice());
           stocksRepository.save(stockUpdate);
           holdingsService.updateHoldingsAfterStocksUpdated(stocksMapper.stocksToStocksDto(stock));
+
         }
         else{
           stocksRepository.save(stock);

@@ -29,6 +29,8 @@ public class Trades {
   private Long stockId;
   @Column(nullable = false)
   private double quantity;
+  private String stockName;
+  private double currentPrice;
   private boolean isBuy;
 
 }

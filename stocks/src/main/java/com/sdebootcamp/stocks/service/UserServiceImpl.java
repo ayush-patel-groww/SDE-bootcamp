@@ -14,9 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @Service
-@AllArgsConstructor
-@NoArgsConstructor
-@Component
 public class UserServiceImpl implements UserService{
   @Autowired
   private UsersRepository usersRepository;
@@ -49,13 +46,18 @@ public class UserServiceImpl implements UserService{
       updateUser.setPassword(userDto.getPassword());
       return MAPPER.usersToUsersDto(usersRepository.save(updateUser));
     }
-    throw new UserNotFound("Invalid UserId Pass"+ userId);
+    throw new UserNotFound("Invalid UserId Pass "+ userId);
   }
 
 
   @Override
-  public void deleteUser(Long userId) {
-
+  public void deleteUser(Long userId) throws UserNotFound {
+    Optional<Users> optionalUser = usersRepository.findById(userId);
+    if(optionalUser.isPresent()) {
+      usersRepository.deleteById(userId);
+      return;
+    }
+    throw new UserNotFound("Invalid UserId pass" + userId);
 
   }
 }

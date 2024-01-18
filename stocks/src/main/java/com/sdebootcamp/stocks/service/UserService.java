@@ -8,6 +8,6 @@ public interface UserService {
   UsersDto getUserById(Long userId) throws UserNotFound;
 
   UsersDto updateUser(Long userId, UsersDto userDto) throws UserNotFound;
-  void deleteUser(Long userId);
+  void deleteUser(Long userId) throws UserNotFound;
 
 }

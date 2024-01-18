@@ -9,65 +9,52 @@ import com.sdebootcamp.stocks.mapper.HoldingsMapper;
 import com.sdebootcamp.stocks.repository.HoldingsRepository;
 import java.util.List;
 import java.util.Objects;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @Service
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Component
-public class HoldingsServiceImpl {
+public class HoldingsServiceImpl implements HoldingsService{
 
   @Autowired
   private HoldingsRepository holdingsRepository;
-  @Autowired
-  private StocksService stocksService;
-  @Autowired
-  private PortfolioService portfolioService;
-  @Autowired
-  private HoldingsService holdingsService;
 
   private final HoldingsMapper holdingsMapper = Mappers.getMapper(HoldingsMapper.class);
 
-  List<HoldingsDto> getAllHoldingsByUserId(Long userId) {
+  @Override
+  public List<HoldingsDto> getAllHoldingsByUserId(Long userId) {
     return holdingsMapper.holdingsListToHoldingsDtoList(holdingsRepository.findByUserId(userId));
   }
 
-  List<HoldingsDto> getAllHoldingsByStockId(Long stockId){
+  @Override
+  public List<HoldingsDto> getAllHoldingsByStockId(Long stockId){
     return holdingsMapper.holdingsListToHoldingsDtoList(holdingsRepository.findByStockId(stockId));
   }
-
-  HoldingsDto getHoldingsByUserIdAndStockId(Long userId, Long stockId) {
+  @Override
+  public HoldingsDto getHoldingsByUserIdAndStockId(Long userId, Long stockId) {
     return holdingsMapper.holdingsToHoldingsDto(
         holdingsRepository.findByUserIDAndStockId(userId, stockId));
   }
 
-  void updateHoldingsAfterTrade(TradesDto tradesDto) throws StockNotFound {
+  @Override
+  public void updateHoldingsAfterTrade(TradesDto tradesDto) throws StockNotFound {
     Holdings holdings = holdingsRepository.findByUserIDAndStockId(tradesDto.getUserAccountId(),
         tradesDto.getStockId());
-    StocksDto stocksDto = stocksService.getStockByStockId(tradesDto.getStockId());
-    // first time buying stocks
     if (!Objects.equals(holdings.getUserAccountId(), tradesDto.getUserAccountId())) {
       holdingsRepository.save(Holdings.builder()
           .userAccountId(tradesDto.getUserAccountId())
           .stockId(tradesDto.getStockId())
-          .stockName(stocksDto.getStockName())
+          .stockName(tradesDto.getStockName())
           .quantity(tradesDto.getQuantity())
-          .buyPrice(stocksDto.getCurrentPrice())
-          .currentPrice(stocksDto.getCurrentPrice())
+          .buyPrice(tradesDto.getCurrentPrice())
+          .currentPrice(tradesDto.getCurrentPrice())
           .gainLoss(0.0)
           .build());
     }
     // Selling stocks
     if (!tradesDto.isBuy()) {
       holdings.setQuantity(holdings.getQuantity() - tradesDto.getQuantity());
-      double gainLossPerStock = stocksDto.getCurrentPrice() - holdings.getBuyPrice();
+      double gainLossPerStock = tradesDto.getCurrentPrice() - holdings.getBuyPrice();
       double gainLoss = gainLossPerStock * tradesDto.getQuantity();
       holdings.setGainLoss(holdings.getGainLoss() - gainLoss);
       holdingsRepository.save(holdings);
@@ -77,16 +64,17 @@ public class HoldingsServiceImpl {
     double quantity = holdings.getQuantity() + tradesDto.getQuantity();
     holdings.setQuantity(quantity);
     double totalBuyPrice = holdings.getQuantity() * holdings.getBuyPrice()
-        + tradesDto.getQuantity() * stocksDto.getCurrentPrice();
+        + tradesDto.getQuantity() * tradesDto.getCurrentPrice();
     double buyPrice = totalBuyPrice / quantity;
     holdings.setBuyPrice(buyPrice);
     holdingsRepository.save(holdings);
 
   }
 
-  void updateHoldingsAfterStocksUpdated(StocksDto stocksDto){
-    List<HoldingsDto> holdingsDtoList = holdingsService.getAllHoldingsByStockId(
-        stocksDto.getStockId());
+  @Override
+  public void updateHoldingsAfterStocksUpdated(StocksDto stocksDto){
+    List<HoldingsDto> holdingsDtoList = holdingsMapper.holdingsListToHoldingsDtoList(holdingsRepository.findByStockId(
+        stocksDto.getStockId()));
     for(HoldingsDto holdingsDto : holdingsDtoList){
       holdingsDto.setCurrentPrice(stocksDto.getCurrentPrice());
       holdingsDto.setGainLoss(holdingsDto.getQuantity()*(stocksDto.getCurrentPrice()-holdingsDto.getBuyPrice()));
