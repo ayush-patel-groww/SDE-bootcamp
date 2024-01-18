@@ -7,12 +7,9 @@ import com.sdebootcamp.stocks.mapper.UserMapper;
 import com.sdebootcamp.stocks.repository.UsersRepository;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -28,16 +25,16 @@ public class UserServiceImpl implements UserService{
 
   @Override
   public UsersDto createUser(UsersDto userDto) {
-    Users savedUser = MAPPER.UsersDtoToUsers(userDto);
+    Users savedUser = MAPPER.usersDtoToUsers(userDto);
     Users users = usersRepository.save(savedUser);
     System.out.println(users.toString());
-    return MAPPER.UsersToUsersDto(users);
+    return MAPPER.usersToUsersDto(users);
   }
 
   @Override
   public UsersDto getUserById(Long userId) throws UserNotFound {
     Optional<Users> optionalUser = usersRepository.findById(userId);
-    if(optionalUser.isPresent()) return MAPPER.UsersToUsersDto(optionalUser.get());
+    if(optionalUser.isPresent()) return MAPPER.usersToUsersDto(optionalUser.get());
     throw new UserNotFound("Invalid UserId pass "+userId);
   }
 
@@ -50,7 +47,7 @@ public class UserServiceImpl implements UserService{
       updateUser.setUserAccountId(userDto.getUserAccountId());
       updateUser.setUsername(userDto.getUsername());
       updateUser.setPassword(userDto.getPassword());
-      return MAPPER.UsersToUsersDto(usersRepository.save(updateUser));
+      return MAPPER.usersToUsersDto(usersRepository.save(updateUser));
     }
     throw new UserNotFound("Invalid UserId Pass"+ userId);
   }
@@ -58,6 +55,7 @@ public class UserServiceImpl implements UserService{
 
   @Override
   public void deleteUser(Long userId) {
+
 
   }
 }

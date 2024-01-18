@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 
 @Mapper
 public interface TradeMapper {
-  Trades TradesDtoToTrades(TradesDto tradesDto);
-  TradesDto TradesToTradesDto(Trades trades);
+  Trades tradesDtoToTrades(TradesDto tradesDto);
+  TradesDto tradesToTradesDto(Trades trades);
 
 }

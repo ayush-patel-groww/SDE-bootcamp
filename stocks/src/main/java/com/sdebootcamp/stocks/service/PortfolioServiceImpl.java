@@ -2,12 +2,8 @@ package com.sdebootcamp.stocks.service;
 
 import com.sdebootcamp.stocks.dto.PortfolioDto;
 import com.sdebootcamp.stocks.dto.TradesDto;
-import com.sdebootcamp.stocks.entity.Portfolio;
-import com.sdebootcamp.stocks.entity.Trades;
 import com.sdebootcamp.stocks.mapper.PortfolioMapper;
 import com.sdebootcamp.stocks.repository.PortfolioRepository;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.mapstruct.factory.Mappers;
@@ -26,7 +22,7 @@ public class PortfolioServiceImpl {
   private final PortfolioMapper portfolioMapper = Mappers.getMapper(PortfolioMapper.class);
 
   PortfolioDto getPortfolioDetailsByUserId(Long userId){
-    return portfolioMapper.PortfolioToPortfolioDto(portfolioRepository.findByUserId(userId));
+    return portfolioMapper.portfolioToPortfolioDto(portfolioRepository.findByUserId(userId));
   }
 
   void updatePortfolioDetails(TradesDto tradesDto){

@@ -7,10 +7,10 @@ import org.mapstruct.Mapper;
 
 @Mapper
 public interface HoldingsMapper {
-  Holdings HoldingsDtoToHoldings(HoldingsDto holdingsDto);
-  HoldingsDto HoldingsToHoldingsDto(Holdings holdings);
-  List<Holdings> HoldingsDtoListToHoldingsList(List<HoldingsDto> holdingsDtoList);
-  List<HoldingsDto> HoldingsListToHoldingsDtoList(List<Holdings> holdingsList);
+  Holdings holdingsDtoToHoldings(HoldingsDto holdingsDto);
+  HoldingsDto holdingsToHoldingsDto(Holdings holdings);
+  List<Holdings> holdingsDtoListToHoldingsList(List<HoldingsDto> holdingsDtoList);
+  List<HoldingsDto> holdingsListToHoldingsDtoList(List<Holdings> holdingsList);
 
 }
 

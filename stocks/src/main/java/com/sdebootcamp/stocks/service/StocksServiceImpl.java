@@ -26,12 +26,15 @@ public class StocksServiceImpl implements StocksService{
   private StocksRepository stocksRepository;
   private final StocksMapper stocksMapper = Mappers.getMapper(StocksMapper.class);
 
+  @Autowired
+  private HoldingsService holdingsService;
+
 
   @Override
   public StocksDto getStockByStockId(Long stockId) throws StockNotFound {
      Optional<Stocks> optionalStock = stocksRepository.findById(stockId);
      if(optionalStock.isPresent()) {
-       return stocksMapper.StocksToStocksDto(optionalStock.get());
+       return stocksMapper.stocksToStocksDto(optionalStock.get());
      }
      throw new StockNotFound("Invalid Stock id pass"+stockId);
   }
@@ -55,6 +58,7 @@ public class StocksServiceImpl implements StocksService{
           stockUpdate.setHigh(stock.getHigh());
           stockUpdate.setCurrentPrice(stock.getCurrentPrice());
           stocksRepository.save(stockUpdate);
+          holdingsService.updateHoldingsAfterStocksUpdated(stocksMapper.stocksToStocksDto(stock));
         }
         else{
           stocksRepository.save(stock);
@@ -72,7 +76,7 @@ public class StocksServiceImpl implements StocksService{
     List<Stocks> stocksList = stocksRepository.findAll();
     List<StocksDto> stocksDtoList = new ArrayList<>();
     for(Stocks stock : stocksList){
-      stocksDtoList.add(stocksMapper.StocksToStocksDto(stock));
+      stocksDtoList.add(stocksMapper.stocksToStocksDto(stock));
     }
     return stocksDtoList;
   }

@@ -7,9 +7,9 @@ import org.mapstruct.Mapper;
 
 @Mapper
 public interface PortfolioMapper {
-    Portfolio PortfolioDtoToPortfolio(PortfolioDto portfolioDto);
-    PortfolioDto PortfolioToPortfolioDto(Portfolio portfolio);
+    Portfolio portfolioDtoToPortfolio(PortfolioDto portfolioDto);
+    PortfolioDto portfolioToPortfolioDto(Portfolio portfolio);
 
-    List<Portfolio> PortfolioDtoListToPortfolioList(List<PortfolioDto> portfolioDtoList);
-    List<PortfolioDto> PortfolioListToPortfolioDtoList(List<Portfolio> portfolioList);
+    List<Portfolio> portfolioDtoListToPortfolioList(List<PortfolioDto> portfolioDtoList);
+    List<PortfolioDto> portfolioListToPortfolioDtoList(List<Portfolio> portfolioList);
 }

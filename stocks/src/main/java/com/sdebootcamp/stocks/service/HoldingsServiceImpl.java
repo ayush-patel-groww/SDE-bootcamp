@@ -1,7 +1,6 @@
 package com.sdebootcamp.stocks.service;
 
 import com.sdebootcamp.stocks.dto.HoldingsDto;
-import com.sdebootcamp.stocks.dto.PortfolioDto;
 import com.sdebootcamp.stocks.dto.StocksDto;
 import com.sdebootcamp.stocks.dto.TradesDto;
 import com.sdebootcamp.stocks.entity.Holdings;
@@ -37,15 +36,15 @@ public class HoldingsServiceImpl {
   private final HoldingsMapper holdingsMapper = Mappers.getMapper(HoldingsMapper.class);
 
   List<HoldingsDto> getAllHoldingsByUserId(Long userId) {
-    return holdingsMapper.HoldingsListToHoldingsDtoList(holdingsRepository.findByUserId(userId));
+    return holdingsMapper.holdingsListToHoldingsDtoList(holdingsRepository.findByUserId(userId));
   }
 
   List<HoldingsDto> getAllHoldingsByStockId(Long stockId){
-    return holdingsMapper.HoldingsListToHoldingsDtoList(holdingsRepository.findByStockId(stockId));
+    return holdingsMapper.holdingsListToHoldingsDtoList(holdingsRepository.findByStockId(stockId));
   }
 
   HoldingsDto getHoldingsByUserIdAndStockId(Long userId, Long stockId) {
-    return holdingsMapper.HoldingsToHoldingsDto(
+    return holdingsMapper.holdingsToHoldingsDto(
         holdingsRepository.findByUserIDAndStockId(userId, stockId));
   }
 
@@ -91,7 +90,7 @@ public class HoldingsServiceImpl {
     for(HoldingsDto holdingsDto : holdingsDtoList){
       holdingsDto.setCurrentPrice(stocksDto.getCurrentPrice());
       holdingsDto.setGainLoss(holdingsDto.getQuantity()*(stocksDto.getCurrentPrice()-holdingsDto.getBuyPrice()));
-      holdingsRepository.save(holdingsMapper.HoldingsDtoToHoldings(holdingsDto));
+      holdingsRepository.save(holdingsMapper.holdingsDtoToHoldings(holdingsDto));
     }
   }
 

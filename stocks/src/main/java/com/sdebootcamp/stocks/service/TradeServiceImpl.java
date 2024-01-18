@@ -1,9 +1,7 @@
 package com.sdebootcamp.stocks.service;
 
 import com.sdebootcamp.stocks.dto.HoldingsDto;
-import com.sdebootcamp.stocks.dto.StocksDto;
 import com.sdebootcamp.stocks.dto.TradesDto;
-import com.sdebootcamp.stocks.entity.Stocks;
 import com.sdebootcamp.stocks.entity.Trades;
 import com.sdebootcamp.stocks.mapper.TradeMapper;
 import com.sdebootcamp.stocks.repository.TradesRepository;
@@ -20,13 +18,13 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 @NoArgsConstructor
 @Component
-public class TradeServiceImpl {
+public class TradeServiceImpl implements TradeService {
   @Autowired
   private TradesRepository tradesRepository;
   @Autowired
   private HoldingsService holdingsService;
   private final TradeMapper tradeMapper = Mappers.getMapper(TradeMapper.class);
-  String placeOrder(TradesDto tradesDto){
+  public String placeOrder(TradesDto tradesDto){
     boolean isBuy = tradesDto.isBuy();
     double quantity = tradesDto.getQuantity();
     if(!isBuy){
@@ -34,36 +32,36 @@ public class TradeServiceImpl {
       if(holdingsDto.getQuantity()<quantity){
         return "Your account doesn't have required shares to sell";
       }
-      tradesRepository.save(tradeMapper.TradesDtoToTrades(tradesDto));
+      tradesRepository.save(tradeMapper.tradesDtoToTrades(tradesDto));
     }
-    tradesRepository.save(tradeMapper.TradesDtoToTrades(tradesDto));
+    tradesRepository.save(tradeMapper.tradesDtoToTrades(tradesDto));
     holdingsService.updateHoldingsAfterTrade(tradesDto);
     return "Order Placed SuccessFully";
   }
 
-  List<TradesDto> getTradesByUserId(Long userId){
+ public List<TradesDto> getTradesByUserId(Long userId){
     List<Trades> tradesList = tradesRepository.findByUserId(userId);
     List<TradesDto> tradesDtoList = new ArrayList<>();
     for(Trades trade : tradesList){
-      tradesDtoList.add(tradeMapper.TradesToTradesDto(trade));
+      tradesDtoList.add(tradeMapper.tradesToTradesDto(trade));
     }
     return tradesDtoList;
   }
 
-  List<TradesDto> getTradesByUserIdAndStockId(Long userId, Long stockId){
+  public List<TradesDto> getTradesByUserIdAndStockId(Long userId, Long stockId){
     List<Trades> tradesList = tradesRepository.findByUserIdAndStockId(userId, stockId);
     List<TradesDto> tradesDtoList = new ArrayList<>();
     for(Trades trade : tradesList){
-      tradesDtoList.add(tradeMapper.TradesToTradesDto(trade));
+      tradesDtoList.add(tradeMapper.tradesToTradesDto(trade));
     }
     return tradesDtoList;
   }
 
-  List<TradesDto> getAllTrades(){
+  public List<TradesDto> getAllTrades(){
     List<Trades> tradesList = tradesRepository.findAll();
     List<TradesDto> tradesDtoList = new ArrayList<>();
     for(Trades trade : tradesList){
-      tradesDtoList.add(tradeMapper.TradesToTradesDto(trade));
+      tradesDtoList.add(tradeMapper.tradesToTradesDto(trade));
     }
     return tradesDtoList;
   }

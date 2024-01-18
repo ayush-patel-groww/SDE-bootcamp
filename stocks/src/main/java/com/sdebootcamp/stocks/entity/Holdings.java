@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 public class Holdings {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(nullable = false)
+  @Column(name ="holding_id", nullable = false)
   private Long holdingId;
   @Column(name ="user_id", nullable = false)
   private Long userAccountId;
