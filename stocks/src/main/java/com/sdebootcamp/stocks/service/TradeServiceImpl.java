@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +49,7 @@ public class TradeServiceImpl implements TradeService {
     return "Order Placed SuccessFully";
   }
 
+  @Cacheable(value = "trades",key="#userId")
  public List<TradesDto> getTradesByUserId(Long userId){
     List<Trades> tradesList = tradesRepository.findByUserId(userId);
     List<TradesDto> tradesDtoList = new ArrayList<>();
@@ -57,6 +59,7 @@ public class TradeServiceImpl implements TradeService {
     return tradesDtoList;
   }
 
+  @Cacheable(value="trades",key="#userIdStockId")
   public List<TradesDto> getTradesByUserIdAndStockId(Long userId, Long stockId){
     List<Trades> tradesList = tradesRepository.findByUserIdAndStockId(userId, stockId);
     List<TradesDto> tradesDtoList = new ArrayList<>();
@@ -66,6 +69,7 @@ public class TradeServiceImpl implements TradeService {
     return tradesDtoList;
   }
 
+  @Cacheable(value = "trades")
   public List<TradesDto> getAllTrades(){
     List<Trades> tradesList = tradesRepository.findAll();
     List<TradesDto> tradesDtoList = new ArrayList<>();

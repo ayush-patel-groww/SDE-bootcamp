@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Objects;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,21 +25,28 @@ public class HoldingsServiceImpl implements HoldingsService{
   private final HoldingsMapper holdingsMapper = Mappers.getMapper(HoldingsMapper.class);
 
   @Override
-  public List<HoldingsDto> getAllHoldingsByUserId(Long userId) {
-    return holdingsMapper.holdingsListToHoldingsDtoList(holdingsRepository.findByUserId(userId));
+  @Cacheable(value = "holdings",key = "#userId")
+  public List<HoldingsDto> getAllHoldingsByUserId(Long userId) throws Exception {
+     List<Holdings> holdings = holdingsRepository.findByUserId(userId);
+     if(Objects.isNull(holdings)) throw new Exception("No Holdings to display");
+     return holdingsMapper.holdingsListToHoldingsDtoList(holdings);
+
   }
 
   @Override
+  @Cacheable(value = "holdings", key ="#stockId")
   public List<HoldingsDto> getAllHoldingsByStockId(Long stockId){
     return holdingsMapper.holdingsListToHoldingsDtoList(holdingsRepository.findByStockId(stockId));
   }
   @Override
+  @Cacheable(value = "holdings", key ="#userIDStockId")
   public HoldingsDto getHoldingsByUserIdAndStockId(Long userId, Long stockId) {
     return holdingsMapper.holdingsToHoldingsDto(
         holdingsRepository.findByUserIDAndStockId(userId, stockId));
   }
 
   @Override
+  @CachePut(value = "holdings")
   public void updateHoldingsAfterTrade(TradesDto tradesDto) throws StockNotFound {
     Holdings holdings = holdingsRepository.findByUserIDAndStockId(tradesDto.getUserAccountId(),
         tradesDto.getStockId());
@@ -75,6 +84,7 @@ public class HoldingsServiceImpl implements HoldingsService{
   }
 
   @Override
+  @CachePut(value = "holdings")
   public void updateHoldingsAfterStocksUpdated(StocksDto stocksDto){
     List<HoldingsDto> holdingsDtoList = holdingsMapper.holdingsListToHoldingsDtoList(holdingsRepository.findByStockId(
         stocksDto.getStockId()));

@@ -8,7 +8,7 @@ import com.sdebootcamp.stocks.exceptions.StockNotFound;
 import java.util.List;
 
 public interface HoldingsService {
-  List<HoldingsDto> getAllHoldingsByUserId(Long userId);
+  List<HoldingsDto> getAllHoldingsByUserId(Long userId) throws Exception;
   List<HoldingsDto> getAllHoldingsByStockId(Long stockId);
 
   HoldingsDto getHoldingsByUserIdAndStockId(Long userId, Long stockId);

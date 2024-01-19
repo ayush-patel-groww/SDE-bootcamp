@@ -13,6 +13,8 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +30,7 @@ public class StocksServiceImpl implements StocksService{
 
 
   @Override
+  @Cacheable(value = "stocks",key="#stockId")
   public StocksDto getStockByStockId(Long stockId) throws StockNotFound {
      Optional<Stocks> optionalStock = stocksRepository.findById(stockId);
      if(optionalStock.isPresent()) {
@@ -37,6 +40,7 @@ public class StocksServiceImpl implements StocksService{
   }
 
   @Override
+  @CachePut(value = "stocks", key="#stockId")
   public void updateStocks(MultipartFile multipartFile) {
     try{
 
@@ -70,6 +74,7 @@ public class StocksServiceImpl implements StocksService{
   }
 
   @Override
+  @Cacheable(value ="stocks")
   public List<StocksDto> getAllStocks() {
     List<Stocks> stocksList = stocksRepository.findAll();
     List<StocksDto> stocksDtoList = new ArrayList<>();

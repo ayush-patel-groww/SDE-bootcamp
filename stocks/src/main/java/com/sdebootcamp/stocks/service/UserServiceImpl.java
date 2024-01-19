@@ -10,6 +10,9 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +32,7 @@ public class UserServiceImpl implements UserService{
   }
 
   @Override
+  @Cacheable(value = "user", key = "#userId")
   public UsersDto getUserById(Long userId) throws UserNotFound {
     Optional<Users> optionalUser = usersRepository.findById(userId);
     if(optionalUser.isPresent()) return MAPPER.usersToUsersDto(optionalUser.get());
@@ -36,6 +40,7 @@ public class UserServiceImpl implements UserService{
   }
 
   @Override
+  @CachePut(value = "user", key="#userId")
   public UsersDto updateUser(Long userId, UsersDto userDto) throws UserNotFound {
     userDto.setUserAccountId(userId);
     Optional<Users> optionalUser = usersRepository.findById(userId);
@@ -51,6 +56,7 @@ public class UserServiceImpl implements UserService{
 
 
   @Override
+  @CacheEvict(value = "user",allEntries = true)
   public void deleteUser(Long userId) throws UserNotFound {
     Optional<Users> optionalUser = usersRepository.findById(userId);
     if(optionalUser.isPresent()) {

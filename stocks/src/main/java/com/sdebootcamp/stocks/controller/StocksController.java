@@ -32,7 +32,7 @@ public class StocksController {
 
     if (StocksHelper.hasCSVFormat(file)) {
       try {
-        message = "We are processing the file.It will take time " + file.getOriginalFilename();
+        message = "Successfully uploaded the file :" + file.getOriginalFilename();
         new Thread(()->{
           try{
             stocksService.updateStocks(file);

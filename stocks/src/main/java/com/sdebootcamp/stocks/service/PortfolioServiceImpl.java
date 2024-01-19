@@ -17,6 +17,8 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -31,9 +33,10 @@ public class PortfolioServiceImpl implements PortfolioService{
   private final PortfolioMapper portfolioMapper = Mappers.getMapper(PortfolioMapper.class);
 
   @Override
+  @Cacheable(value = "portfolio", key="#userId")
   public PortfolioDto getPortfolioDetailsByUserId(Long userId) throws Exception{
     List<HoldingsDto> holdingsDtoList = holdingsService.getAllHoldingsByUserId(userId);
-    if(Objects.isNull(holdingsDtoList)) throw new Exception("user not found");
+//    if(Objects.isNull(holdingsDtoList)) throw new Exception("No Holdings to display");
     double totalPortfolioHolding=0.0;
     double totalBuyPrice = 0.0;
     double totalProfitLoss = 0.0;
@@ -73,6 +76,7 @@ public class PortfolioServiceImpl implements PortfolioService{
   }
 
   @Override
+  @CachePut(value = "portfolio")
   public void updatePortfolioDetailsAfterTrades(TradesDto tradesDto,StocksDto stocksDto) throws StockNotFound{
     Optional<Portfolio> optionalPortfolio = portfolioRepository.findByUserId(tradesDto.getUserAccountId());
 
