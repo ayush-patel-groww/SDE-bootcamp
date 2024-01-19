@@ -9,7 +9,7 @@ import java.util.List;
 
 
 public interface PortfolioService {
-   PortfolioDto getPortfolioDetailsByUserId(Long userAccountId);
+   PortfolioDto getPortfolioDetailsByUserId(Long userAccountId) throws Exception;
    void updatePortfolioDetailsAfterTrades(TradesDto tradesDto,StocksDto stocksDto) throws StockNotFound;
 
 }

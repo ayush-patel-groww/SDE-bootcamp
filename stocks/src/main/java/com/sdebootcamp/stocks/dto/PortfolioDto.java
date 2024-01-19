@@ -16,7 +16,7 @@ import lombok.Setter;
 public class PortfolioDto {
 
   private Long userAccountId;
-  private List<Holdings> holdingsList;
+  private List<HoldingsDto> holdingsDtoList;
   private double totalPortfolioHolding;
   private double totalBuyPrice;
   private double totalProfitLoss;

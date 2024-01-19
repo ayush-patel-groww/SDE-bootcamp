@@ -32,14 +32,16 @@ public class TradeServiceImpl implements TradeService {
   public String placeOrder(TradesDto tradesDto) throws StockNotFound {
     boolean isBuy = tradesDto.isBuy();
     double quantity = tradesDto.getQuantity();
-    HoldingsDto holdingsDto = holdingsService.getHoldingsByUserIdAndStockId(tradesDto.getUserAccountId(),tradesDto.getStockId());
     if(!isBuy){
+      HoldingsDto holdingsDto = holdingsService.getHoldingsByUserIdAndStockId(tradesDto.getUserAccountId(),tradesDto.getStockId());
       if(holdingsDto.getQuantity()<quantity){
         return "Your account doesn't have required shares to sell";
       }
       tradesRepository.save(tradeMapper.tradesDtoToTrades(tradesDto));
     }
     StocksDto stocksDto = stocksService.getStockByStockId(tradesDto.getStockId());
+    tradesDto.setCurrentPrice(stocksDto.getCurrentPrice());
+    tradesDto.setStockName(stocksDto.getStockName());
     tradesRepository.save(tradeMapper.tradesDtoToTrades(tradesDto));
     holdingsService.updateHoldingsAfterTrade(tradesDto);
     portfolioService.updatePortfolioDetailsAfterTrades(tradesDto,stocksDto);

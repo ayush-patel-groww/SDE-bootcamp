@@ -19,20 +19,18 @@ import lombok.NoArgsConstructor;
 
 
 @Entity
-@Table(name = "Portfolio")
+@Table(name = "portfolio")
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Portfolio {
   @Id
+  @Column(name = "user_id",nullable = false)
   private Long userAccountId;
   private double totalPortfolioHolding;
   private double totalBuyPrice;
   private double totalProfitLoss;
   private double totalProfitLossPercentage;
 
-  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @JoinColumn(name = "holding_id")
-  private List<Holdings> holdingsList;
 }

@@ -4,6 +4,7 @@ import com.sdebootcamp.stocks.dto.HoldingsDto;
 import com.sdebootcamp.stocks.dto.StocksDto;
 import com.sdebootcamp.stocks.dto.TradesDto;
 import com.sdebootcamp.stocks.entity.Holdings;
+import com.sdebootcamp.stocks.entity.Portfolio;
 import com.sdebootcamp.stocks.exceptions.StockNotFound;
 import com.sdebootcamp.stocks.mapper.HoldingsMapper;
 import com.sdebootcamp.stocks.repository.HoldingsRepository;
@@ -40,7 +41,8 @@ public class HoldingsServiceImpl implements HoldingsService{
   public void updateHoldingsAfterTrade(TradesDto tradesDto) throws StockNotFound {
     Holdings holdings = holdingsRepository.findByUserIDAndStockId(tradesDto.getUserAccountId(),
         tradesDto.getStockId());
-    if (!Objects.equals(holdings.getUserAccountId(), tradesDto.getUserAccountId())) {
+
+    if (Objects.isNull(holdings)) {
       holdingsRepository.save(Holdings.builder()
           .userAccountId(tradesDto.getUserAccountId())
           .stockId(tradesDto.getStockId())
@@ -50,6 +52,7 @@ public class HoldingsServiceImpl implements HoldingsService{
           .currentPrice(tradesDto.getCurrentPrice())
           .gainLoss(0.0)
           .build());
+      return;
     }
     // Selling stocks
     if (!tradesDto.isBuy()) {
@@ -75,6 +78,7 @@ public class HoldingsServiceImpl implements HoldingsService{
   public void updateHoldingsAfterStocksUpdated(StocksDto stocksDto){
     List<HoldingsDto> holdingsDtoList = holdingsMapper.holdingsListToHoldingsDtoList(holdingsRepository.findByStockId(
         stocksDto.getStockId()));
+    if(Objects.isNull(holdingsDtoList)) return;
     for(HoldingsDto holdingsDto : holdingsDtoList){
       holdingsDto.setCurrentPrice(stocksDto.getCurrentPrice());
       holdingsDto.setGainLoss(holdingsDto.getQuantity()*(stocksDto.getCurrentPrice()-holdingsDto.getBuyPrice()));

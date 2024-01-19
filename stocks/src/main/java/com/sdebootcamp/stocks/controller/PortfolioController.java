@@ -17,7 +17,7 @@ public class PortfolioController {
   private PortfolioService portfolioService;
 
   @GetMapping("{id}")
-  ResponseEntity<PortfolioDto> getPortfolioDetailsByUserId(@PathVariable(name = "id") Long userAccountId){
+  ResponseEntity<PortfolioDto> getPortfolioDetailsByUserId(@PathVariable(name = "id") Long userAccountId) throws Exception{
     return new ResponseEntity<>(portfolioService.getPortfolioDetailsByUserId(userAccountId),
         HttpStatus.OK);
   }

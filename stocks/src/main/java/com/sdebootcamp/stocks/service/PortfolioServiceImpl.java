@@ -10,6 +10,8 @@ import com.sdebootcamp.stocks.mapper.PortfolioMapper;
 import com.sdebootcamp.stocks.repository.PortfolioRepository;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import javax.sound.sampled.Port;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -22,16 +24,16 @@ import org.springframework.stereotype.Service;
 public class PortfolioServiceImpl implements PortfolioService{
   @Autowired
   private PortfolioRepository portfolioRepository;
-//  @Autowired
-//  private StocksService stocksService;
+
   @Autowired
   private HoldingsService holdingsService;
 
   private final PortfolioMapper portfolioMapper = Mappers.getMapper(PortfolioMapper.class);
 
   @Override
-  public PortfolioDto getPortfolioDetailsByUserId(Long userId){
+  public PortfolioDto getPortfolioDetailsByUserId(Long userId) throws Exception{
     List<HoldingsDto> holdingsDtoList = holdingsService.getAllHoldingsByUserId(userId);
+    if(Objects.isNull(holdingsDtoList)) throw new Exception("user not found");
     double totalPortfolioHolding=0.0;
     double totalBuyPrice = 0.0;
     double totalProfitLoss = 0.0;
@@ -42,33 +44,51 @@ public class PortfolioServiceImpl implements PortfolioService{
       totalProfitLoss += holdingsDto.getGainLoss();
     }
     totalProfitLossPercentage = (totalProfitLoss/totalBuyPrice)*100;
-    Portfolio portfolio = portfolioRepository.findByUserId(userId);
+    Optional<Portfolio> optionalPortfolio = portfolioRepository.findByUserId(userId);
+    if(optionalPortfolio.isEmpty()){
+       Portfolio newPortfolio = Portfolio.builder()
+           .totalProfitLoss(totalProfitLoss)
+           .totalBuyPrice(totalBuyPrice)
+           .userAccountId(userId)
+           .totalPortfolioHolding(totalPortfolioHolding)
+           .totalProfitLossPercentage(totalProfitLossPercentage)
+           .build();
+      portfolioRepository.save(newPortfolio);
+       PortfolioDto newPortfolioDto = portfolioMapper.portfolioToPortfolioDto(newPortfolio);
+       newPortfolioDto.setHoldingsDtoList(holdingsDtoList);
+       return newPortfolioDto;
+    }
+    Portfolio portfolio = optionalPortfolio.get();
     portfolio.setTotalPortfolioHolding(totalPortfolioHolding);
     portfolio.setTotalBuyPrice(totalBuyPrice);
     portfolio.setTotalProfitLoss(totalProfitLoss);
     portfolio.setTotalProfitLossPercentage(totalProfitLossPercentage);
     portfolioRepository.save(portfolio);
 
-    return portfolioMapper.portfolioToPortfolioDto(portfolio);
+     PortfolioDto portfolioDto = portfolioMapper.portfolioToPortfolioDto(portfolioRepository.findByUserId(userId).orElseGet(()->{return Portfolio.builder()
+        .build();}));
+     portfolioDto.setHoldingsDtoList(holdingsDtoList);
+     return portfolioDto;
+
   }
 
   @Override
   public void updatePortfolioDetailsAfterTrades(TradesDto tradesDto,StocksDto stocksDto) throws StockNotFound{
-    Portfolio portfolio = portfolioRepository.findByUserId(tradesDto.getUserAccountId());
-//    StocksDto stocksDto = stocksService.getStockByStockId(tradesDto.getStockId());
+    Optional<Portfolio> optionalPortfolio = portfolioRepository.findByUserId(tradesDto.getUserAccountId());
+
     HoldingsDto holdingsDto = holdingsService.getHoldingsByUserIdAndStockId(
         tradesDto.getUserAccountId(), tradesDto.getStockId());
 
     // First time buying stocks
-    if(!Objects.equals(portfolio.getUserAccountId(), tradesDto.getUserAccountId())){
-      portfolioRepository.save(Portfolio.builder()
-              .totalPortfolioHolding(tradesDto.getQuantity()*stocksDto.getCurrentPrice())
-              .totalBuyPrice(tradesDto.getQuantity()*stocksDto.getCurrentPrice())
-              .totalProfitLoss(0.0)
-              .totalProfitLossPercentage(0.0)
+    Portfolio portfolio = optionalPortfolio.orElseGet(()->{
+         return portfolioRepository.save(Portfolio.builder()
+                 .userAccountId(tradesDto.getUserAccountId())
+          .totalPortfolioHolding(tradesDto.getQuantity()*stocksDto.getCurrentPrice())
+          .totalBuyPrice(tradesDto.getQuantity()*stocksDto.getCurrentPrice())
+          .totalProfitLoss(0.0)
+          .totalProfitLossPercentage(0.0)
           .build());
-      return ;
-    }
+    });
 
     // Selling stocks
     if(!tradesDto.isBuy()){
