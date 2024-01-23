@@ -31,6 +31,6 @@ public class Trades {
   private double quantity;
   private String stockName;
   private double currentPrice;
-  private boolean isBuy;
+  private boolean buy;
 
 }

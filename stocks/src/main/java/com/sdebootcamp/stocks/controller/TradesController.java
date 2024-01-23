@@ -19,7 +19,7 @@ public class TradesController {
   private TradeService tradeService;
 
   @PostMapping
-  public String placeOrder(@RequestBody TradesDto tradesDto) throws StockNotFound {
+  public String placeOrder(@RequestBody TradesDto tradesDto) throws StockNotFound,Exception {
     return tradeService.placeOrder(tradesDto);
   }
 

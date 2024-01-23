@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface TradeService {
 
-  String placeOrder(TradesDto tradesDto) throws StockNotFound;
+  String placeOrder(TradesDto tradesDto) throws StockNotFound, Exception;
 
   List<TradesDto> getTradesByUserId(Long userId);
 

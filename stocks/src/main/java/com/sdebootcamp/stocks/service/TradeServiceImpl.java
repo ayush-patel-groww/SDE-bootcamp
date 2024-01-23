@@ -30,11 +30,12 @@ public class TradeServiceImpl implements TradeService {
 
 
   private final TradeMapper tradeMapper = Mappers.getMapper(TradeMapper.class);
-  public String placeOrder(TradesDto tradesDto) throws StockNotFound {
+  public String placeOrder(TradesDto tradesDto) throws StockNotFound,Exception {
     boolean isBuy = tradesDto.isBuy();
     double quantity = tradesDto.getQuantity();
     if(!isBuy){
       HoldingsDto holdingsDto = holdingsService.getHoldingsByUserIdAndStockId(tradesDto.getUserAccountId(),tradesDto.getStockId());
+      if(holdingsDto == null) throw new Exception("No shares to sell");
       if(holdingsDto.getQuantity()<quantity){
         return "Your account doesn't have required shares to sell";
       }
